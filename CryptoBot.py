@@ -1,15 +1,15 @@
-import asyncio
+#import asyncio
 from glob import glob
-import imp
+#import imp
 import json
 from locale import format_string
 from multiprocessing.connection import Client
 from os import wait3
-import string
+#import string
 import discord
 import requests
 import threading
-import random
+#import random
 from discord.ext import tasks
 from sqlalchemy import JSON
 
@@ -35,7 +35,7 @@ def getCryptoPrice(crypto):
     URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus'
     r = requests.get(url=URL)
     data = r.json()
-    print(data[0]['current_price'])
+   # print(data[0]['current_price'])
 
 
 # getCryptoPrice('vigorus')
@@ -59,8 +59,7 @@ async def my_background_task():
         formatted_string = "{:.2f}".format(
             data[0]['current_price'] - last_price)
         stringDiff = str(formatted_string)
-        print("last_price:", last_price, " current_price:",
-              data[0]['current_price'], " difference:", stringDiff)
+       # print("last_price:", last_price, " current_price:",data[0]['current_price'], " difference:", stringDiff)
 
     await client.change_presence(activity=discord.Game(name="VIS - INR ₹"+str(last_price)+" "+stringDiff+"%"))
     last_price = data[0]['current_price']
