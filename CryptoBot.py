@@ -82,7 +82,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('!creator'):
-        await message.channel.send('Created By @DNPL')
+        await message.channel.send('Created By @Harsh Gaur | DNPL')
 
 
 my_background_task.start()
