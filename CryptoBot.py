@@ -33,13 +33,14 @@ stringDiff = "0.00"
 def getCryptoPrice(crypto):
     global last_price
     global data
-    URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus'
+    URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus' 
+   # Use variable for coin ID or just hard coded it.
     r = requests.get(url=URL)
     data = r.json()
    # print(data[0]['current_price'])
 
 
-getCryptoPrice('vigorus')
+getCryptoPrice('vigorus') # Use different coin ID for different coin
 
 
 # instatiate discord client
