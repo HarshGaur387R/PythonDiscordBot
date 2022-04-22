@@ -12,7 +12,8 @@ import threading
 import random
 from discord.ext import tasks
 from sqlalchemy import JSON
-
+from webserver import keep_alive
+import os
 
 # json data from https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus
 
@@ -47,20 +48,21 @@ client = discord.Client()
 # ===========Creating loop for getting data from coingecko.com every minute==============
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=7)
 async def my_background_task():
+    price_change_percentage = 0.00
     formatted_string = format_string
     global stringDiff
     global last_price
     """A background task that gets invoked every 1 minutes."""
     getCryptoPrice('vigorus')
-
+    price_change_percentage = "{:.2f}".format(data[0]['price_change_percentage_24h']) 
     if(last_price != data[0]['current_price']):
-        formatted_string = "{:.2f}".format(data[0]['current_price'] - last_price)
+        formatted_string = "{:.5f}".format(data[0]['current_price'] - last_price)
         stringDiff = str(formatted_string)
         print("last_price:", last_price, " current_price:",data[0]['current_price'], " difference:", stringDiff)
 
-    await client.change_presence(activity=discord.Game(name="VIS - INR ₹"+str(last_price)+" "+stringDiff+"%"))
+    await client.change_presence(activity=discord.Game(name="₹ "+str(last_price)+" | "+price_change_percentage+"%"))
     last_price = data[0]['current_price']
 
 
@@ -86,5 +88,6 @@ async def on_message(message):
 
 
 my_background_task.start()
-BOT_TOKKEN = 'OTQxOTY4ODUzMTA0MjMwNDEx.Ygdq2w.341UFNEcM8yzhkIlgFYPphQVwLM'
-client.run(BOT_TOKKEN)
+keep_alive()
+my_secret = os.environ['DISCORD_BOT_SECRET']
+client.run(my_secret)
