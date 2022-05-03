@@ -1,4 +1,4 @@
-# PythonDiscordBot
+# Crypto Tracing Discord Bot
 
 This is a discord cryoto tracing bot build in discord.py
 
