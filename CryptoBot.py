@@ -12,8 +12,13 @@ import threading
 import random
 from discord.ext import tasks
 from sqlalchemy import JSON
-from webserver import keep_alive
+# from webserver import keep_alive
 import os
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+load_dotenv(Path("secretKey.env"))
+BotSecret = os.getenv("BOTSECRET")
 
 # json data from https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus
 
@@ -33,14 +38,14 @@ stringDiff = "0.00"
 def getCryptoPrice(crypto):
     global last_price
     global data
-    URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus' 
+    URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus'
    # Use variable for coin ID or just hard coded it.
     r = requests.get(url=URL)
     data = r.json()
    # print(data[0]['current_price'])
 
 
-getCryptoPrice('vigorus') # Use different coin ID for different coin
+getCryptoPrice('vigorus')  # Use different coin ID for different coin
 
 
 # instatiate discord client
@@ -55,17 +60,22 @@ async def my_background_task():
     formatted_string = format_string
     global stringDiff
     global last_price
-    """A background task that gets invoked every 1 minutes."""
+    """A background task that gets invoked in every 1 minutes."""
     getCryptoPrice('vigorus')
-    price_change_percentage = "{:.2f}".format(data[0]['price_change_percentage_24h']) 
-    if(last_price != data[0]['current_price']):
-        formatted_string = "{:.5f}".format(data[0]['current_price'] - last_price)
-        stringDiff = str(formatted_string)
-        print("last_price:", last_price, " current_price:",data[0]['current_price'], " difference:", stringDiff)
 
-    await client.change_presence(activity=discord.Game(name="₹ "+str(last_price)+" | "+price_change_percentage+"%"))
-    last_price = data[0]['current_price']
+    try :
+        price_change_percentage = "{:.2f}".format(data[0]['price_change_percentage_24h'])
+        if(last_price != data[0]['current_price']):
+            formatted_string = "{:.5f}".format(data[0]['current_price'] - last_price)
+            stringDiff = str(formatted_string)
+            print("last_price:", last_price, " current_price:",data[0]['current_price'], " difference:", stringDiff)
 
+        await client.change_presence(activity=discord.Game(name="₹ "+str(last_price)+" | "+price_change_percentage+"%"))
+        last_price = data[0]['current_price']
+    except Exception as e:
+        await client.change_presence(activity=discord.Game(name="₹ "+"0.00"+" | "+"0.00"+"%"))
+        last_price = data[0]['current_price']
+        print(e)
 
 @my_background_task.before_loop
 async def my_background_task_before_loop():
@@ -89,6 +99,5 @@ async def on_message(message):
 
 
 my_background_task.start()
-keep_alive()
-my_secret = os.environ['DISCORD_BOT_SECRET']
-client.run(my_secret)
+# keep_alive()
+client.run(BotSecret)
