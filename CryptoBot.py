@@ -69,11 +69,12 @@ async def my_background_task():
             formatted_string = "{:.5f}".format(data[0]['current_price'] - last_price)
             stringDiff = str(formatted_string)
             print("last_price:", last_price, " current_price:",data[0]['current_price'], " difference:", stringDiff)
-
         await client.change_presence(activity=discord.Game(name="₹ "+str(last_price)+" | "+price_change_percentage+"%"))
         last_price = data[0]['current_price']
     except Exception as e:
-        await client.change_presence(activity=discord.Game(name="₹ "+"0.00"+" | "+"0.00"+"%"))
+        # await client.change_presence(activity=discord.Game(name="₹ "+"0.00"+" | "+"0.00"+"%")) 
+        # Price_change_percentage_24h is returning null this is why we are showing current price only.
+        await client.change_presence(activity=discord.Game(name="current price : "+"₹"+str(data[0]['current_price'])))
         last_price = data[0]['current_price']
         print(e)
 
