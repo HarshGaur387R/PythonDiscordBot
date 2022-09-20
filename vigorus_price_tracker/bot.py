@@ -1,78 +1,78 @@
 import asyncio
-from glob import glob
-import imp
+from itertools import cycle
 import json
-from locale import format_string
-from multiprocessing.connection import Client
-from os import wait3
-import string
+from http import client
+from pickle import TRUE
+from telnetlib import STATUS
 import discord
-import requests
-import threading
-import random
+from discord.ext import commands
+from discord.ext.commands import Bot
 from discord.ext import tasks
-from sqlalchemy import JSON
-# from webserver import keep_alive
-import os
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+import os
+from os import system
+import requests
+# import webserver
+# from webserver import keep_alive
+
 
 load_dotenv(Path("secretKey.env"))
-BotSecret = os.getenv("VBOTSECRET")
-
-# json data from https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus
+BotSecret = os.getenv('VBOTSECRET')
 
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 
 intents.messages = True
 intents.presences = False
 intents.messages = True
 intents.guilds = True
 
-
-
 # Global variable
 last_price = 0.0
 Last_difference = 0.0
 data = json
 stringDiff = "0.00"
+current_price = 0
 
 
 # getting json data from coingecko.com
-def getCryptoPrice(crypto):
+def getCryptoPrice():
     global last_price
     global data
+    global current_price
     URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=vigorus'
-   # Use variable for coin ID or just hard coded it.
+    # Use variable for coin ID or just hard coded it.
     r = requests.get(url=URL)
     data = r.json()
-   # print(data[0]['current_price'])
+    current_price = '1KATA: ₹' + str(data[0]['current_price'])
+    print(current_price)
 
 
-getCryptoPrice()  # Use different coin ID for different coin
-
-
-# instatiate discord client
-client = discord.Client(commands_prefix = '.', intents=intents)
-
-
-
-# Sending message to server
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('!creator'):
-        await message.channel.send('Created By @Harsh Gaur | DNPL')
-
-
-# keep_alive()
+# client = discord.Client(commands_prefix='.', intents=intents)
+client = commands.Bot(command_prefix='.',intents=intents)
 
 @client.event
 async def on_ready():
+    change_status.start()
     print('Bot is ready')
 
 
-client.run(BotSecret)
+@client.command()
+async def creator(ctx):
+    await ctx.send("Created by (Harsh | DN#0506)")
+
+
+@tasks.loop(seconds=10)
+async def change_status():
+   getCryptoPrice()
+   await client.change_presence(activity=discord.Game(current_price))
+
+# keep_alive()
+
+try:
+ client.run(BotSecret)
+except discord.errors.HTTPException:
+   print(discord.errors.HTTPException)
+  #  print("\n\n\nBLOCKED BY RATE LIMITS\nRESTARTING NOW\n\n\n")
+  #  system("python restarter.py")
