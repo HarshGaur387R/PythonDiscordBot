@@ -1,6 +1,6 @@
 # Crypto Tracing Discord Bot
 
-This price tracking bot is different because we use WEB SCRAPING in this bot because all websites do not provide API's ans some tokens are only available on such websites.
+This price tracking bot is different because we use WEB SCRAPING in this bot because all websites do not provide API's and some tokens are only available on such websites.
 
 The live data is coming from : https://coinmarketcap.com/currencies/zod-rune---rune-game/
 
